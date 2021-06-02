@@ -27,26 +27,26 @@ public class MyDBHandler extends SQLiteOpenHelper {
         Log.v("created db", "on create reached!");
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USERS + "(" + COLUMN_NAME + " TEXT, " + COLUMN_DESCRIPTION + " TEXT, " + COLUMN_FOLLOWED + " TEXT, " + COLUMN_ID + " INTEGER PRIMARY KEY )";
         db.execSQL(CREATE_USER_TABLE);
-        addUser(new user("Reiner", "Student",1, false));
-        addUser(new user("Luna", "Staff", 2,false));
-        addUser(new user("Josef", "Admin",3, true));
-        addUser(new user("Jeff", "Lecturer", 4,true));
-        addUser(new user("David", "Student", 5,false));
-        addUser(new user("ghost", "Student", 6,false));
-        addUser(new user("Hazard", "Admin", 7,false));
-        addUser(new user("Sonya", "Student",8, true));
-        addUser(new user("Apple", "Staff",9, false));
-        addUser(new user("Fason", "Student",10, true));
-        addUser(new user("Mitch", "Lecturer",11, true));
-        addUser(new user("Ern", "Lecturer",12, true));
-        addUser(new user("Lam", "Staff",13, false));
-        addUser(new user("Ed", "Student",14, true));
-        addUser(new user("Ted", "Admin", 15,false));
-        addUser(new user("Mary", "Student",16, false));
-        addUser(new user("Blade", "Student",17, false));
-        addUser(new user("Hale", "Staff",18, false));
-        addUser(new user("raze", "Student",19, false));
-        addUser(new user("Galde", "Staff",20, false));
+        db.insert(TABLE_USERS, null, addUser(new user("Reiner", "Student",1, false)));
+        db.insert(TABLE_USERS, null, addUser(new user("Luna", "Staff", 2,false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Josef", "Admin",3, true)));
+        db.insert(TABLE_USERS, null,addUser(new user("Jeff", "Lecturer", 4,true)));
+        db.insert(TABLE_USERS, null,addUser(new user("David", "Student", 5,false)));
+        db.insert(TABLE_USERS, null,addUser(new user("ghost", "Student", 6,false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Hazard", "Admin", 7,false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Sonya", "Student",8, true)));
+        db.insert(TABLE_USERS, null,addUser(new user("Apple", "Staff",9, false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Fason", "Student",10, true)));
+        db.insert(TABLE_USERS, null,addUser(new user("Mitch", "Lecturer",11, true)));
+        db.insert(TABLE_USERS, null,addUser(new user("Ern", "Lecturer",12, true)));
+        db.insert(TABLE_USERS, null,addUser(new user("Lam", "Staff",13, false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Ed", "Student",14, true)));
+        db.insert(TABLE_USERS, null,addUser(new user("Ted", "Admin", 15,false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Mary", "Student",16, false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Blade", "Student",17, false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Hale", "Staff",18, false)));
+        db.insert(TABLE_USERS, null,addUser(new user("raze", "Student",19, false)));
+        db.insert(TABLE_USERS, null,addUser(new user("Galde", "Staff",20, false)));
     }
 
     @Override
@@ -55,20 +55,17 @@ public class MyDBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addUser(user user) {
+    public ContentValues addUser(user user) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, user.getName());
         values.put(COLUMN_DESCRIPTION, user.getDescription());
-
-
-
         boolean followed = user.isFollowed();
         String followed_string = String.valueOf(followed);
         values.put(COLUMN_FOLLOWED, followed_string);
-        SQLiteDatabase db = this.getWritableDatabase();
+        values.put(COLUMN_ID, user.getId());
+        return values;
+        //SQLiteDatabase db = this.getWritableDatabase(); // get sqlitedatabase instance
 
-        db.insert(TABLE_USERS, null, values);
-        db.close();
     }
 
     public ArrayList<user> getUser() {
@@ -83,8 +80,8 @@ public class MyDBHandler extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 user.setName(cursor.getString(0));
                 user.setDescription(cursor.getString(1));
-                user.setId(Integer.parseInt(cursor.getString(3)));
                 user.setFollowed(Boolean.parseBoolean(cursor.getString(2)));
+                user.setId(Integer.parseInt(cursor.getString(3)));
                 cursor.close();
                 userlist.add(user);
             }
