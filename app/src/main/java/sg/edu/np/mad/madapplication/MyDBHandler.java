@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 
 public class MyDBHandler extends SQLiteOpenHelper {
+
+    private static MyDBHandler mInstance = null;
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "UserDB.db";
     public static final String TABLE_USERS = "Users";
@@ -18,6 +20,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_NAME = "UserName";
     public static final String COLUMN_DESCRIPTION = "Description";
     public static final String COLUMN_FOLLOWED = "Followed";
+    private Context mCxt;
     public MyDBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
     {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -27,26 +30,26 @@ public class MyDBHandler extends SQLiteOpenHelper {
         Log.v("created db", "on create reached!");
         String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USERS + "(" + COLUMN_NAME + " TEXT, " + COLUMN_DESCRIPTION + " TEXT, " + COLUMN_FOLLOWED + " TEXT, " + COLUMN_ID + " INTEGER PRIMARY KEY )";
         db.execSQL(CREATE_USER_TABLE);
-        db.insert(TABLE_USERS, null, addUser(new user("Reiner", "Student",1, false)));
-        db.insert(TABLE_USERS, null, addUser(new user("Luna", "Staff", 2,false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Josef", "Admin",3, true)));
-        db.insert(TABLE_USERS, null,addUser(new user("Jeff", "Lecturer", 4,true)));
-        db.insert(TABLE_USERS, null,addUser(new user("David", "Student", 5,false)));
-        db.insert(TABLE_USERS, null,addUser(new user("ghost", "Student", 6,false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Hazard", "Admin", 7,false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Sonya", "Student",8, true)));
-        db.insert(TABLE_USERS, null,addUser(new user("Apple", "Staff",9, false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Fason", "Student",10, true)));
-        db.insert(TABLE_USERS, null,addUser(new user("Mitch", "Lecturer",11, true)));
-        db.insert(TABLE_USERS, null,addUser(new user("Ern", "Lecturer",12, true)));
-        db.insert(TABLE_USERS, null,addUser(new user("Lam", "Staff",13, false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Ed", "Student",14, true)));
-        db.insert(TABLE_USERS, null,addUser(new user("Ted", "Admin", 15,false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Mary", "Student",16, false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Blade", "Student",17, false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Hale", "Staff",18, false)));
-        db.insert(TABLE_USERS, null,addUser(new user("raze", "Student",19, false)));
-        db.insert(TABLE_USERS, null,addUser(new user("Galde", "Staff",20, false)));
+        addUser(db, new user("Reiner", "Student",1, false));
+        addUser(db, new user("Luna", "Staff", 2,false));
+        addUser(db, new user("Josef", "Admin",3, true));
+        addUser(db, new user("Jeff", "Lecturer", 4,true));
+        addUser(db, new user("David", "Student", 5,false));
+        addUser(db, new user("ghost", "Student", 6,false));
+        addUser(db, new user("Hazard", "Admin", 7,false));
+        addUser(db, new user("Sonya", "Student",8, true));
+        addUser(db, new user("Apple", "Staff",9, false));
+        addUser(db, new user("Fason", "Student",10, true));
+        addUser(db, new user("Mitch", "Lecturer",11, true));
+        addUser(db, new user("Ern", "Lecturer",12, true));
+        addUser(db, new user("Lam", "Staff",13, false));
+        addUser(db, new user("Ed", "Student",14, true));
+        addUser(db, new user("Ted", "Admin", 15,false));
+        addUser(db, new user("Mary", "Student",16, false));
+        addUser(db, new user("Blade", "Student",17, false));
+        addUser(db, new user("Hale", "Staff",18, false));
+        addUser(db, new user("raze", "Student",19, false));
+        addUser(db, new user("Galde", "Staff",20, false));
     }
 
     @Override
@@ -55,25 +58,25 @@ public class MyDBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public ContentValues addUser(user user) {
+    public void addUser(SQLiteDatabase db, user user) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_NAME, user.getName());
         values.put(COLUMN_DESCRIPTION, user.getDescription());
         boolean followed = user.isFollowed();
         String followed_string = String.valueOf(followed);
         values.put(COLUMN_FOLLOWED, followed_string);
-        values.put(COLUMN_ID, user.getId());
-        return values;
+    
+        db.insert(TABLE_USERS, null, values);
+
         //SQLiteDatabase db = this.getWritableDatabase(); // get sqlitedatabase instance
 
     }
 
     public ArrayList<user> getUser() {
         ArrayList<user> userlist = new ArrayList<user>();
-        SQLiteDatabase db = null;
+        SQLiteDatabase db = this.getReadableDatabase();
         for (int i = 0; i < 20; i++) {
             String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_ID + "== " + i;
-            db = this.getReadableDatabase();
 
             Cursor cursor = db.rawQuery(query, null);
             user user = new user();
@@ -88,10 +91,29 @@ public class MyDBHandler extends SQLiteOpenHelper {
             else {
                 user = null;
             }
-
+            cursor.close();
         }
         db.close();
         return userlist;
+    }
+
+    public void updateUser(user user){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + TABLE_USERS + " SET " + COLUMN_FOLLOWED + " = " + user.isFollowed() + " WHERE " + COLUMN_ID + " = " + user.getId();
+        db.execSQL(query);
+        db.close();
+    }
+    public static MyDBHandler getInstance(Context ctx) {
+        if (mInstance == null) {
+            mInstance = new MyDBHandler(ctx.getApplicationContext());
+        }
+        return mInstance;
+    }
+
+
+    private MyDBHandler(Context ctx) {
+        super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
+        this.mCxt = ctx;
     }
 
 

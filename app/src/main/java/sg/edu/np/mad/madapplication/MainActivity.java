@@ -1,6 +1,7 @@
 package sg.edu.np.mad.madapplication;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,13 +12,14 @@ import android.widget.Toast;
 public class MainActivity extends ListActivity {
 
     private final static String TAG = "Main Activity";
+    MyDBHandler db = MyDBHandler.getInstance(this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.v(TAG, "On Create!");
-
     }
 
     @Override
@@ -27,6 +29,7 @@ public class MainActivity extends ListActivity {
     }
 
     protected void onResume() {
+
         Intent receivedData = getIntent();
         int user_pos = receivedData.getIntExtra("User position",0);
         user user = Userlist.get(user_pos);
@@ -47,11 +50,14 @@ public class MainActivity extends ListActivity {
             @Override
             public void onClick(View v) {
                 if (user.isFollowed() == false){
+
                     Toast.makeText(MainActivity.this, "Updated", Toast.LENGTH_LONG).show();
                     button.setText("Unfollow");
                     user.setFollowed(true);
                     Log.v(TAG, "Followed toast dialog");
                     Log.v(TAG, toString().valueOf(user.isFollowed()));
+                    db.updateUser(user);
+
                 }
                 else{
                     Toast.makeText(MainActivity.this, "Updated", Toast.LENGTH_LONG).show();
@@ -59,6 +65,8 @@ public class MainActivity extends ListActivity {
                     user.setFollowed(false);
                     Log.v(TAG, "Unfollowed toast dialog");
                     Log.v(TAG, toString().valueOf(user.isFollowed()));
+                    db.updateUser(user);
+
                 }
             }
         });
