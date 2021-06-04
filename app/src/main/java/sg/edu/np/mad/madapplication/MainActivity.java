@@ -12,7 +12,7 @@ import android.widget.Toast;
 public class MainActivity extends ListActivity {
 
     private final static String TAG = "Main Activity";
-    MyDBHandler db = MyDBHandler.getInstance(this);
+    MyDBHandler db;
 
 
     @Override
@@ -20,6 +20,7 @@ public class MainActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.v(TAG, "On Create!");
+        db = MyDBHandler.getInstance(this);
     }
 
     @Override
@@ -57,7 +58,6 @@ public class MainActivity extends ListActivity {
                     Log.v(TAG, "Followed toast dialog");
                     Log.v(TAG, toString().valueOf(user.isFollowed()));
                     db.updateUser(user);
-
                 }
                 else{
                     Toast.makeText(MainActivity.this, "Updated", Toast.LENGTH_LONG).show();

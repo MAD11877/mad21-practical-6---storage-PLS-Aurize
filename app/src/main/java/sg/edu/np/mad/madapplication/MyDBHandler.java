@@ -99,8 +99,9 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     public void updateUser(user user){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "UPDATE " + TABLE_USERS + " SET " + COLUMN_FOLLOWED + " = " + user.isFollowed() + " WHERE " + COLUMN_ID + " = " + user.getId();
-        db.execSQL(query);
+        ContentValues update_values = new ContentValues();
+        update_values.put(COLUMN_FOLLOWED,!user.isFollowed());
+        db.update(TABLE_USERS, update_values, COLUMN_ID + " = " + user.getId(), null );
         db.close();
     }
     public static MyDBHandler getInstance(Context ctx) {
