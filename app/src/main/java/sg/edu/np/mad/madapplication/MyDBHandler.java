@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class MyDBHandler extends SQLiteOpenHelper {
 
-    private static MyDBHandler mInstance = null;
+    private static MyDBHandler mInstance;
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "UserDB.db";
     public static final String TABLE_USERS = "Users";
@@ -100,13 +100,14 @@ public class MyDBHandler extends SQLiteOpenHelper {
     public void updateUser(user user){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues update_values = new ContentValues();
-        update_values.put(COLUMN_FOLLOWED,!user.isFollowed());
+        update_values.put(COLUMN_FOLLOWED,String.valueOf(!user.isFollowed()));
         db.update(TABLE_USERS, update_values, COLUMN_ID + " = " + user.getId(), null );
         db.close();
     }
     public static MyDBHandler getInstance(Context ctx) {
         if (mInstance == null) {
             mInstance = new MyDBHandler(ctx.getApplicationContext());
+            Log.v("Instance", String.valueOf(mInstance));
         }
         return mInstance;
     }

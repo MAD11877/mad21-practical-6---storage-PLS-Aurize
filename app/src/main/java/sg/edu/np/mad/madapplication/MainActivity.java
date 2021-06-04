@@ -9,7 +9,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends ListActivity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = "Main Activity";
     MyDBHandler db;
@@ -33,7 +35,7 @@ public class MainActivity extends ListActivity {
 
         Intent receivedData = getIntent();
         int user_pos = receivedData.getIntExtra("User position",0);
-        user user = Userlist.get(user_pos);
+        user user = ListActivity.Userlist.get(user_pos);
         Button button = findViewById(R.id.button3);
         TextView hello =findViewById(R.id.hello);
         TextView des = findViewById(R.id.textView);
