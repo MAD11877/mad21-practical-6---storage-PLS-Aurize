@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.v(TAG, "Unfollowed toast dialog");
                     Log.v(TAG, toString().valueOf(user.isFollowed()));
                     db.updateUser(user);
-
                 }
             }
         });
